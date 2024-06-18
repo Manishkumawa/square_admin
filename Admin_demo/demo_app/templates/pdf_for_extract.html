@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+    <div class=" mt-0">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="uploadModalLabel">Upload Data</h5>
+            
+          </div>
+          <div class="modal-body">
+            <form id="uploadForm" method="POST" enctype="multipart/form-data"  onsubmit="return validateForm()" >
+
+              {% csrf_token %}
+              <div class="form-group row">
+                <label for="insurer" class="col-sm-2 col-form-label">Insurer</label>
+                <div class="col-sm-10">
+                  <select class="form-control" id="insurer" name="insurer">
+                      <option value="">Select an option</option>
+                      <option value="ICICI">ICICI</option>
+                      <option value="SBI">SBI</option>
+                      <option value="ROYAl">ROYAL</option>
+                      <option value="MAJMA">MAJMA</option>
+                      <option value="FUTURE">FUTURE</option>
+                  </select>
+                  <span id="insurerError" class="text-danger" style="display: none;">Insurer is required.</span>
+                </div>
+              </div>
+              <div class="form-group row">
+                <label for="lob" class="col-sm-2 col-form-label">LOB</label>
+                <div class="col-sm-10">
+                    <select class="form-control" id="lob" name="lob">
+                        <option value="">Select an option</option>
+                        <option value="Health">Health</option>
+                        <option value="Motor">Motor</option>
+                        <option value="Life">Life</option>
+                        <option value="Travel">Travel</option>
+                        <option value="NMMotor">NMMotor</option>
+                    </select>
+                    <span id="lobError" class="text-danger" style="display: none;">LOB is required.</span>
+                </div>
+            </div>
+              
+            <div class="form-group row">
+                <label for="product" class="col-sm-2 col-form-label">Product</label>
+                <div class="col-sm-10">
+                    <select class="form-control" id="product" name="product">
+                        <option value="">Select an option</option>
+                        <option value="PC">Private Car</option>
+                        <option value="TW">Two wheeler</option>
+                    </select>
+                    <span id="productError" class="text-danger" style="display: none;">Product is required.</span>
+                </div>
+            </div>
+            
+            <div class="form-group row">
+                <label for="productPlanType" class="col-sm-2 col-form-label">Product Plan Type</label>
+                <div class="col-sm-10">
+                    <select class="form-control" id="productPlanType" name="productPlanType">
+                        <option value="">Select an option</option>
+                        <option value="CP">CP</option>
+                        <option value="TP">TP</option>
+                        <option value="OO">OO</option>
+                        <option value="New">New</option>
+                    </select>
+                    <span id="productPlanTypeError" class="text-danger" style="display: none;">Product Plan Type is required.</span>
+                </div>
+            </div>
+            
+            <div class="form-group row">
+                <label for="fileUpload" class="col-sm-2 col-form-label">File Upload</label>
+                <div class="col-sm-10">
+                    <input type="file" class="form-control-file" id="fileUpload" name="fileUpload" accept=".pdf">
+                    <span id="fileUploadError" class="text-danger" style="display: none;">File is required.</span>
+                </div>
+            </div>
+            
+            
+              <button type="submit" class="btn btn-primary">PDF For Extract</button>
+            </form>
+          </div>
+        </div>
+    </div>
+    
+    
+
+{% endblock content %}
+
+{% block  script%}
+    <script>
+        function validateForm() {
+            var insurer = document.getElementById("insurer");
+            var lob = document.getElementById("lob");
+            var product = document.getElementById("product");
+            var productPlanType = document.getElementById("productPlanType");
+            var fileUpload = document.getElementById("fileUpload");
+        
+            var isValid = true;
+            if (insurer.value === "") {
+                document.getElementById("insurerError").style.display = "block";
+                isValid =false;
+            } else {
+                document.getElementById("insurerError").style.display = "none";
+            }
+        
+            if (lob.value === "") {
+                document.getElementById("lobError").style.display = "block";
+                isValid =false;
+            } else {
+                document.getElementById("lobError").style.display = "none";
+            }
+        
+            if (product.value === "") {
+                document.getElementById("productError").style.display = "block";
+                isValid =false;
+            } else {
+                document.getElementById("productError").style.display = "none";
+            }
+        
+            if (productPlanType.value === "") {
+                document.getElementById("productPlanTypeError").style.display = "block";
+                isValid =false;
+            } else {
+                document.getElementById("productPlanTypeError").style.display = "none";
+            }
+
+            if (fileUpload.files.length === 0) {
+                document.getElementById("fileUploadError").style.display = "block";
+                isValid =false;
+            } else {
+                document.getElementById("fileUploadError").style.display = "none";
+            }
+        
+        
+            return isValid;
+        }
+        
+
+    </script>
+
+{% endblock script %}
+
+  

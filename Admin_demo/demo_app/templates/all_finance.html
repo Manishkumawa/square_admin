@@ -1,0 +1,230 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class ="d-flex justify-content-end mb-3" >
+  <!-- Button trigger modal -->
+  <button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#exampleModal">
+      Add
+  </button>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+      <div class="modal-content">
+          <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">Add Data</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+              </button>
+          </div>
+          <div class="modal-body">
+              <form id="addForm">
+                  {% csrf_token %}
+                  <div class="form-group">
+                      <label for="add-financier-id">Financier ID</label>
+                      <input type="text" class="form-control" id="add-financier-id" name="financier_id">
+                  </div>
+                  <div class="form-group">
+                      <label for="add-financier-name">Financier Name</label>
+                      <input type="text" class="form-control" id="add-financier-name" name="financier_name">
+                  </div>
+                  <div class="form-group">
+                      <label for="add-status">Status</label>
+                      <input type="text" class="form-control" id="add-status" name="status">
+                  </div>
+              </form>
+          </div>
+          <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              <button type="button" class="btn btn-primary" id="addChanges">Add Data</button>
+          </div>
+      </div>
+  </div>
+</div>
+
+
+    
+
+
+
+  
+    
+    <table id="finance-table" class="display table table-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Financier ID</th>
+                <th>Financier Name</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Data will be loaded here -->
+        </tbody>
+    </table>
+</div>
+
+<!-- Modal HTML -->
+<div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="editModalLabel">Edit Data</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form id="editForm">
+          {% csrf_token %}
+          <input type="hidden" id="edit-id" name="id">
+          <div class="form-group">
+            <label for="edit-financier-id">Financier ID</label>
+            <input type="text" class="form-control" id="edit-financier-id" name="financier_id">
+          </div>
+          <div class="form-group">
+            <label for="edit-financier-name">Financier Name</label>
+            <input type="text" class="form-control" id="edit-financier-name" name="financier_name">
+          </div>
+          <div class="form-group">
+            <label for="edit-status">Status</label>
+            <input type="text" class="form-control" id="edit-status" name="status">
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" id="saveChanges">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock content %}
+
+{% block script %}
+
+<script>
+  jQuery(document).ready(function($) {
+      function getCookie(name) {
+          let cookieValue = null;
+          if (document.cookie && document.cookie !== '') {
+              const cookies = document.cookie.split(';');
+              for (let i = 0; i < cookies.length; i++) {
+                  const cookie = cookies[i].trim();
+                  if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                      cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                      break;
+                  }
+              }
+          }
+          return cookieValue;
+      }
+      
+      const csrftoken = getCookie('csrftoken');
+
+      var financeTable = $('#finance-table').DataTable({
+          "processing": true,
+          "serverSide": true,
+          "ajax": {
+              "url": "{% url 'data_masters' %}",
+              "type": "GET",
+              "data": function (d) {
+                  d.page = Math.floor((d.start + d.length) / d.length);
+                  d.length = $('#finance-table').DataTable().page.len();
+                  d.search_value = $('#finance-table').DataTable().search();
+                  
+              },
+              "dataSrc": function(json) {
+                  console.log("Data received from server:", json);
+                  return json.data;
+              }
+          },
+          "columns": [
+              { "data": "id" },
+              { "data": "financier_id" },
+              { "data": "financier_name" },
+              { "data": "status" },
+              { 
+                  "data": null,
+                  "render": function(data, type, row) {
+                      return '<button class="btn btn-primary edit-button">Edit</button>';
+                  }
+              }
+          ],
+          "paging": true,
+          
+          "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
+          "searching": true,
+          "info": true
+      });
+
+      $('#finance-table tbody').on('click', '.edit-button', function() {
+          var data = financeTable.row($(this).parents('tr')).data();
+          $('#edit-id').val(data.id);
+          $('#edit-financier-id').val(data.financier_id);
+          $('#edit-financier-name').val(data.financier_name);
+          $('#edit-status').val(data.status);
+          $('#editModal').modal('show');
+      });
+
+      $('#saveChanges').on('click', function() {
+          var formData = {
+              id: $('#edit-id').val(),
+              financier_id: $('#edit-financier-id').val(),
+              financier_name: $('#edit-financier-name').val(),
+              status: $('#edit-status').val()
+          };
+          $.ajax({
+              url: '{% url "update_data" %}',
+              type: 'POST',
+              contentType: 'application/json',
+              data: JSON.stringify(formData),
+              headers: {
+                  'X-CSRFToken': csrftoken
+              },
+              success: function(response) {
+                  $('#editModal').modal('hide');
+                  financeTable.ajax.reload(null, false);
+              },
+              error: function(error) {
+                  console.log('Error:', error);
+              }
+          });
+      });
+
+
+      $('#addChanges').on('click', function() {
+        var formData = {
+            financier_id: $('#add-financier-id').val(),
+            financier_name: $('#add-financier-name').val(),
+            status: $('#add-status').val()
+        };
+        console.log(formData);
+        $.ajax({
+            url: '{% url "add_data" %}',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(formData),
+            headers: {
+                'X-CSRFToken': csrftoken
+            },
+            success: function(response) {
+                $('#exampleModal').modal('hide');
+                financeTable.ajax.reload(null, false);
+            },
+            error: function(error) {
+                console.log('Error:', error);
+            }
+        });
+  });
+
+});
+
+  
+
+</script>
+
+{% endblock script %}

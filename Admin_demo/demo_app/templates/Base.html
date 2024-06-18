@@ -1,0 +1,126 @@
+
+<!DOCTYPE html>
+{% load static %}
+{% load custom_filters %}
+
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css"/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css"/>
+  <link rel="stylesheet" href="{% static 'main.css' %}"/>
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css"/>
+</head>
+<body>
+<div id="sidebar-overlay" class="overlay w-100 vh-100 position-fixed d-none"></div>
+
+<!-- sidebar -->
+<div class="col-md-3 col-lg-2 px-0 position-fixed h-100 bg-white shadow-sm sidebar" id="sidebar">
+  <h1 class="bi bi-bootstrap text-primary d-flex my-4 justify-content-center"></h1>
+  <div class="list-group rounded-0">
+    <a href="{% url "server2"%}" class="list-group-item list-group-item-action active border-0 d-flex align-items-center">
+      <span class="bi bi-border-all"></span>
+      <span class="ml-2">Dashboard</span>
+    </a>
+    <a href="{% url "masters"%}" class="list-group-item list-group-item-action active border-0 d-flex align-items-center my-8">
+      <span class="bi bi-border-all"></span>
+      <span class="ml-2">Masters</span>
+    </a>
+    <button class="list-group-item list-group-item-action border-0 d-flex justify-content-between align-items-center"
+            data-toggle="collapse" data-target="#pdf-extract-collapse">
+      <span class="ml-2">PDF Extract</span>
+      <span class="bi bi-chevron-down"></span>
+    </button>
+    <div class="collapse" id="pdf-extract-collapse" data-parent="#sidebar">
+      <div class="list-group">
+        <a href="#" class="list-group-item list-group-item-action border-2 d-flex align-items-center justify-content-end">
+          <span class="bi bi-list"></span>
+          <span class="ml-2">List</span>
+        </a>
+        <a href="{% url "upload_data" %}" class="list-group-item list-group-item-action border-2 d-flex align-items-center justify-content-end">
+          <span class="bi bi-upload"></span>
+          <span class="ml-2">Upload</span>
+        </a>
+      </div>
+    </div>
+    <button class="list-group-item list-group-item-action border-0 d-flex justify-content-between align-items-center"
+            data-toggle="collapse" data-target="#financer-masters-collapse">
+      <span class="ml-2">Financer Masters</span>
+      <span class="bi bi-chevron-down"></span>
+    </button>
+    
+    <div class="collapse" id="financer-masters-collapse" data-parent="#sidebar">
+      <div class="list-group">
+        <a href="#" class="list-group-item list-group-item-action border-2 d-flex align-items-center justify-content-end">
+          <span class="ml-2">Chola</span>
+        </a>
+        <a href="#" class="list-group-item list-group-item-action border-2 d-flex align-items-center justify-content-end">
+          <span class="ml-2">Iffco</span>
+        </a>
+        <a href="#" class="list-group-item list-group-item-action border-2 d-flex align-items-center justify-content-end">
+          <span class="ml-2">HDFC</span>
+        </a>
+        <a href="#" class="list-group-item list-group-item-action border-2 d-flex align-items-center justify-content-end">
+          <span class="ml-2">ShriRam</span>
+        </a>
+        <a href="#" class="list-group-item list-group-item-action border-2 d-flex align-items-center justify-content-end">
+          <span class="ml-2">Liberty</span>
+        </a>
+        <a href="#" class="list-group-item list-group-item-action border-2 d-flex align-items-center justify-content-end">
+          <span class="ml-2">Magma</span>
+        </a>
+        <a href="#" class="list-group-item list-group-item-action border-2 d-flex align-items-center justify-content-end">
+          <span class="ml-2">Raheja</span>
+        </a>
+        <a href="#" class="list-group-item list-group-item-action border-2 d-flex align-items-center justify-content-end">
+          <span class="ml-2">United</span>
+        </a>
+        <a href="#" class="list-group-item list-group-item-action border-2 d-flex align-items-center justify-content-end">
+          <span class="ml-2">Comman</span>
+        </a>
+        
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="col-md-9 col-lg-10 ml-md-auto px-0 ms-md-auto">
+  <!-- top nav -->
+  <nav class="w-100 d-flex px-4 py-2 mb-4 shadow-sm">
+    <!-- close sidebar -->
+    <button class="btn py-0 d-lg-none" id="open-sidebar">
+      <span class="bi bi-list text-primary h3"></span>
+    </button>
+    <div class="dropdown ml-auto">
+      <button class="btn py-0 d-flex align-items-center" id="logout-dropdown" data-toggle="dropdown" aria-expanded="false">
+        <span class="bi bi-person text-primary h4"></span>
+        <span class="bi bi-chevron-down ml-1 mb-2 small"></span>
+      </button>
+      <div class="dropdown-menu dropdown-menu-right border-0 shadow-sm" aria-labelledby="logout-dropdown">
+        <a class="dropdown-item" href="{% url "logout" %}">Logout</a>
+        <a class="dropdown-item" href="#">Settings</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- main content -->
+  <div class="jumbotron jumbotron-fluid rounded bg-white border-0 shadow-sm border-left ">
+    <div class="container">
+      {% block content %}{% endblock content %}
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js"></script>
+<script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+<script src="{% static 'main.js' %}"></script>
+
+{% block script %}
+{% endblock script %}
+</body>
+</html>
+
